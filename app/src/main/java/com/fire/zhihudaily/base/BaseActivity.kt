@@ -16,7 +16,7 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
  */
 abstract class BaseActivity : RxAppCompatActivity() {
 
-    private var preference: SharedPreferences? = null;
+    private var preference: SharedPreferences? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,12 +32,13 @@ abstract class BaseActivity : RxAppCompatActivity() {
 
     abstract fun initData()
 
-    fun getPreference() : SharedPreferences{
-        if (preference == null) {
-            preference = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
+    fun getPreference():SharedPreferences{
+        if (preference==null){
+            preference = getSharedPreferences(getString(R.string.app_name),Context.MODE_PRIVATE)
         }
         return preference!!
     }
+
 
     fun setToolBar(toolbar: Toolbar, title: String) {
         toolbar.title = title + ""

@@ -53,6 +53,17 @@ class OtherThemeFragment : BaseFragment() {
     private var mLayoutEditor: LinearLayout? = null
     private var editors: List<Editor>? = null
 
+    //静态类Inner.newInstance
+    object Inner {
+        fun newInstance(item: String): OtherThemeFragment {
+            val fragment = OtherThemeFragment()
+            val args = Bundle()
+            args.putString("item", item)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val args = arguments
@@ -177,13 +188,5 @@ class OtherThemeFragment : BaseFragment() {
                 })
     }
 
-    object Inner {
-        fun newInstance(item: String): OtherThemeFragment {
-            val fragment = OtherThemeFragment()
-            val args = Bundle()
-            args.putString("item", item)
-            fragment.arguments = args
-            return fragment
-        }
-    }
+
 }

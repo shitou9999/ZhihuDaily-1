@@ -97,6 +97,35 @@ public class ClassStudy {
 4.  对象声明
 5.  嵌套类和内部类
 
+
+类它有一个默认唯一的构造器。当然可以创建额外的构造器，通常情况下我们只需要这个默认的构造器。
+你只需要在类名后面写上它的构造参数，而且如果这个类没有任何内容可以省略大括号
+
+—–类继承—–
+    任何类在默认情况下都是继承自 Any （就如同java中所有类都是Object的子类），当然同java一样我们可以继承其它类。
+但是在kotlin中所有的类默认都是不可继承的（相当于java中类有个性符final），因此只能继承那些明确声明为open或者为abstract 的类：
+
+//定义一个open类Bird
+open class Bird(name: String)
+//定义一个类Duck继承自Bird
+class Duck(name: String, surname: String) : Bird(name)
+//如果只有单个构造器时，需要在父类继承下来的构造器中指定需要的参数。来替换Java中super调用。
+
+—-方法（函数）介绍——
+
+    //定义onCreate方法,没有指定返回值时，它就会返回Unit，与Java中的void类似
+    //Unit 是一个真正的对象。你当然也可以指定任何其它的返回类型
+    fun onCreate(savedInstanceState: Bundle?){
+     //TODO
+    }
+    如果返回的结果可以使用一个表达式计算出来，你可以不使用括号而是使用=
+    fun add(x:  Int,y:  Int) : Int =  x + y
+
+—-函数参数——
+    //我们指定length的值为Toast.LENGTH_SHORT
+    fun toast(message:String,length:Int =Toast.LENGTH_SHORT){
+
+
     */
 
 }

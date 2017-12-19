@@ -1,0 +1,140 @@
+
+RxBinding------>所谓 Binding，就是类似设置OnClickListener设置TextWatcher这样的注册绑定对象的 API
+*********************************************************************************
+RxBinding就是把 发布--订阅 的模式用在了android控件的点击，文本变化上。
+通过 RxBinding 把点击监听转换成 Observable 之后，就有了对它进行扩展的可能。
+RxBinding和Rxlifecycle结合起来使用，可以控制控件监听的生命周期。
+
+https://github.com/simplezhli/RxBindingExample
+
+一般包下面就用
+compile 'com.jakewharton.rxbinding:rxbinding:2.0.0'
+
+v4'support-v4' library bindings:
+compile 'com.jakewharton.rxbinding:rxbinding-support-v4:2.0.0'
+
+'appcompat-v7' library bindings:
+compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7:2.0.0'
+
+'design' library bindings:
+compile 'com.jakewharton.rxbinding:rxbinding-design:2.0.0'
+
+'recyclerview-v7' library bindings:
+compile compile 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:2.0.0'
+
+'leanback-v17' library bindings:
+compile 'com.jakewharton.rxbinding2:rxbinding-leanback-v17:2.0.0'
+
+
+Button 防抖处理
+ button = (Button) findViewById( R.id.bt );
+
+ RxView.clicks( button )
+        .throttleFirst( 2 , TimeUnit.SECONDS ) //两秒钟之内只取一个0点击事件，防抖操作
+        .subscribe(new Action1<Void>() {
+             @Override
+              public void call(Void aVoid) {
+                Toast.makeText(MainActivity.this, "点击了", Toast.LENGTH_SHORT).show();
+              }
+        }) ;
+按钮的长按时间监听
+button = (Button) findViewById( R.id.bt ) ;
+
+ //监听长按时间
+ RxView.longClicks( button)
+      .subscribe(new Action1<Void>() {
+          @Override
+         public void call(Void aVoid) {
+         Toast.makeText(MainActivity.this, "long click  ！！", Toast.LENGTH_SHORT).show();
+         }
+     }) ;
+listView 的点击事件、长按事件处理
+listView = (ListView) findViewById( R.id.listview );
+
+ List<String> list = new ArrayList<>() ;
+     for ( int i = 0 ; i < 40 ; i++ ){
+         list.add( "sss" + i ) ;
+     }
+
+ final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1 );
+     adapter.addAll( list );
+
+ listView.setAdapter( adapter );
+
+ //item click event
+ RxAdapterView.itemClicks( listView )
+     .subscribe(new Action1<Integer>() {
+         @Override
+         public void call(Integer integer) {
+         Toast.makeText(ListActivity.this, "item click " + integer , Toast.LENGTH_SHORT).show();
+             }
+         }) ;
+
+ //item long click
+ RxAdapterView.itemLongClicks( listView)
+     .subscribe(new Action1<Integer>() {
+         @Override
+         public void call(Integer integer) {
+             Toast.makeText(ListActivity.this, "item long click " + integer , Toast.LENGTH_SHORT).show();
+             }
+         }) ;
+用户登录界面，勾选同意隐私协议，登录按钮就变高亮
+button = (Button) findViewById( R.id.login_bt );
+checkBox = (CheckBox) findViewById( R.id.checkbox );
+
+RxCompoundButton.checkedChanges( checkBox )
+    .subscribe(new Action1<Boolean>() {
+        @Override
+        public void call(Boolean aBoolean) {
+            button.setEnabled( aBoolean );
+            button.setBackgroundResource( aBoolean ? R.color.button_yes : R.color.button_no );
+            }
+        }) ;
+
+搜索的时候，关键词联想功能 。debounce()在一定的时间内没有操作就会发送事件。
+editText = (EditText) findViewById( R.id.editText );
+ listView = (ListView) findViewById( R.id.listview );
+
+ final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1 );
+ listView.setAdapter( adapter );
+
+ RxTextView.textChanges( editText )
+             .debounce( 600 , TimeUnit.MILLISECONDS )
+             .map(new Func1<CharSequence, String>() {
+                 @Override
+                 public String call(CharSequence charSequence) {
+                     //get the keyword
+                     String key = charSequence.toString() ;
+                     return key ;
+                 }
+             })
+             .observeOn( Schedulers.io() )
+             .map(new Func1<String, List<String>>() {
+                 @Override
+                 public List<String> call(String keyWord ) {
+                     //get list
+                     List<String> dataList = new ArrayList<String>() ;
+                     if ( ! TextUtils.isEmpty( keyWord )){
+                         for ( String s : getData()  ) {
+                             if (s != null) {
+                                 if (s.contains(keyWord)) {
+                                     dataList.add(s);
+                                 }
+                             }
+                         }
+                     }
+                     return dataList ;
+                 }
+             })
+             .observeOn( AndroidSchedulers.mainThread() )
+             .subscribe(new Action1<List<String>>() {
+                 @Override
+                 public void call(List<String> strings) {
+                     adapter.clear();
+                     adapter.addAll( strings );
+                     adapter.notifyDataSetChanged();
+                 }
+             }) ;
+
+
+*********************************************************************************

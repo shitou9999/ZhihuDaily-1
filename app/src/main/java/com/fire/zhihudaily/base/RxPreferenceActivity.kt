@@ -13,10 +13,10 @@ import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 
 /**
- * Created by fire on 2017/12/11.
- * Date：2017/12/11
- * Author: fire
- * Description:
+ * PreferencesActivity是Android中专门用来实现程序设置界面及参数存储的一个Activity
+ * 只要把Activity继承PreferenceActivity， PreferenceActivity会帮我们处理选项的读写。从Android3.0开始，
+ * 官方不推荐单独使用PreferenceActivity，而是建议PreferenceActivity与PreferenceFragment结合使用。
+ *
  */
 open class RxPreferenceActivity : PreferenceActivity(), LifecycleProvider<ActivityEvent> {
 

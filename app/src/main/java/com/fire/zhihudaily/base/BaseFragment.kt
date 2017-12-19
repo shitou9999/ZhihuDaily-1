@@ -58,6 +58,10 @@ abstract class BaseFragment : RxFragment() {
         }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+    }
+
     protected fun onVisible() {
         lazyLoad()
     }

@@ -1,0 +1,134 @@
+
+1.类的声明:
+ *关键字
+ *不存在结构体的空类
+
+2.构造函数
+    *主构造函数。副级或多级构造函数
+     关键字或者构造函数名：constructor(参数)----默认的可见性修饰符时public。可以省略不写
+3.类的实例化
+
+4.类的组成
+    *构造函数和初始化代码块
+    *属性（字段）
+    *函数（方法）
+    *内部类（嵌套类）
+    *对象声明
+
+5.类的集成
+    *超类（Any）
+    *方法复写 属性复写 复写规则
+
+6.类的类别
+    *抽象类
+    **密封类***
+    *内部类
+    *接口类
+    *枚举类
+    **数据类***
+
+//当类没有结构体的时候，大括号可以省略
+    class Test{
+        // 属性...
+        ...
+        // 构造函数
+        ...
+        // 函数
+        ...
+        // 内部类
+       ...
+       ...
+    }
+
+二、类的构造函数
+
+    主构造函数是类头的一部分，类名的后面跟上构造函数的关键字以及类型参数
+    class Test constructor(num : Int){
+         ...
+    }
+    等价于
+    /*
+         因为是默认的可见性修饰符且不存在任何的注释符
+         故而主构造函数constructor关键字可以省略
+    */
+    class Test(num: Int){
+          ...
+    }     println("num = $num")
+    构造函数中的初始化代码块-----》 值得注意的是，init{...}中能使用构造函数中的参数
+
+    *********声明属性的简便方法*********
+    //var表示变量（可读写），val表示常量（只读）
+    class Test(val num1 : Int, var num2 : Long, val str : String){
+        ...
+    }
+
+    辅助（二级）构造函数-------》Kotlin中支持二级构造函数。它们以constructor关键字作为前缀。
+
+*************同时存在主构造函数和二级构造函数时的情况*******************
+
+如果类具有主构造函数，则每个辅助构造函数需要通过另一个辅助构造函数直接或间接地委派给主构造函数。
+使用this关键字对同一类的另一个构造函数进行委派：
+fun main(args: Array<String>) {
+    var test1 = Test(1)
+    var test2 = Test(1,2)
+}
+
+// 这里是为了代码清晰，故而没有隐藏constructor关键字
+class Test constructor(num: Int){
+
+    init {
+        println("num = $num")
+    }
+
+    constructor(num : Int, num2: Int) : this(num) {
+        println(num + num2) //说明：二级构造函数中的参数1(num)，是委托了主构造函数的参数num。
+    }
+}
+num = 1
+num = 1
+3
+当实例化类的时候只传1个参数的时候，只会执行init代码块中的代码。
+当传2个参数的时候，除了执行了init代码块中代码外，还执行了二级构造函数中的代码
+
+*******************当类的主构造函数都存在默认值时的情况**********************
+
+在JVM上，如果类主构造函数的所有参数都具有默认值，编译器将生成一个额外的无参数构造函数，它将使用默认值。
+这使得更容易使用Kotlin与诸如Jackson或JPA的库，通过无参数构造函数创建类实例。
+同理可看出，当类存在主构造函数并且有默认值时，二级构造函数也适用
+fun main(args: Array<String>) {
+    var test = Test()
+    var test1 = Test(1,2)
+    var test2 = Test(4,5,6)
+}
+
+class Test constructor(num1: Int = 10 , num2: Int = 20){
+
+    init {
+        println("num1 = $num1\t num2 = $num2")
+    }
+
+    constructor(num1 : Int = 1, num2 : Int = 2, num3 : Int = 3) : this(num1 , num2){
+        println("num1 = $num1\t num2 = $num2 \t num3 = $num3")
+    }
+}
+
+输出结果为：
+num1 = 10	 num2 = 20
+num1 = 1	 num2 = 2
+num1 = 4	 num2 = 5
+num1 = 4	 num2 = 5 	 num3 = 6
+
+说明： 当实例化无参的构造函数时。使用了参数的默认值。
+
+三、类的实例化
+    var test = Test()
+    var test1 = Test(1,2)
+
+https://github.com/Jetictors/KotlinLeran/blob/d1e8a491000fa0f5a3034f66eb068272f2c56042/src/com/kotlin/leran/cls/interfaceDemo/Demo3.kt
+
+
+
+
+
+
+
