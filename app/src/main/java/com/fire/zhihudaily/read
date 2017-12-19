@@ -1,0 +1,91 @@
+
+
+>RxBus
+ 1.------>支持注解方式订阅事件。2.--------> 支持粘滞事件。3.支持3种Bus:
+ Publish Bus( RxBus，参见 PublishSubject )
+ Behavior Bus(参见 BehaviorSubject)
+ Replay Bus(参见ReplaySubject)
+ 这三种都是基于Subject类，它负责在非Rx-Apis之间充当桥梁。但是也存在问题。
+ 他没有能力去处理onComplete或 onError事件.如果在下游发生onError / onComplete ，上游将受到影响。
+ 
+ Relays 是既是Observable也是Consumer的RxJava 类型，它同样能够很容易在non-Rx api和 Rx api之间搭起桥梁,
+ 而不必要担心下游的触发的终止状态（onComplete 或 onError）。
+ 
+ 如何使用
+ 发送事件
+ RxBus.getInstance().send(new UserEvent(1,"名字"));
+ 接受事件
+ //注册
+ disposable = RxBus.getInstance().register(UserEvent.class, AndroidSchedulers.mainThread(), new Consumer<UserEvent>() {
+             @Override
+             public void accept(UserEvent userEvent) {
+                 btnNext.setText(userEvent.getName());
+                 Toast.makeText(getBaseContext(), userEvent.toString(), Toast.LENGTH_SHORT).show();
+                 Log.d("AActivity", "onNext:" + Thread.currentThread().getName());
+                 throw new NullPointerException("空指针错误");//发生错误之后，会取消订阅
+             }
+         }, new Consumer<Throwable>() {
+             @Override
+             public void accept(Throwable throwable) throws Exception {
+                 //发生错误后仅仅会进入一次，因为发生错误之后，会取消订阅
+                 Toast.makeText(getBaseContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+             }
+         });
+         //上下两段代码具有相同意义
+ disposable=RxBus.getInstance().toObservable(UserEvent.class)
+                 .observeOn(AndroidSchedulers.mainThread())
+                 .subscribe(new Consumer<UserEvent>() {
+             @Override
+             public void accept(UserEvent userEvent) throws Exception {
+                 btnNext.setText(userEvent.getName());
+                 Toast.makeText(getBaseContext(),userEvent.toString(),Toast.LENGTH_SHORT).show();
+                 Log.d("AActivity","onNext:"+Thread.currentThread().getName());
+                 throw new NullPointerException("空指针错误");//发生错误之后，会取消订阅
+             }
+         },new Consumer<Throwable>() {
+             @Override
+             public void accept(Throwable throwable) throws Exception {
+                 //发生错误后仅仅会进入一次，因为发生错误之后，会取消订阅
+                 Toast.makeText(getBaseContext(),throwable.getMessage(),Toast.LENGTH_SHORT).show();
+             }
+         });
+ 
+ //解除
+ @Override
+ protected void onDestroy() {
+     super.onDestroy();
+     RxBus.getInstance().unregister(disposable);
+ }
+ 关键代码
+ public final class RxBus {
+     private Relay<Object> bus = null;
+     private static RxBus instance;
+ 
+     //禁用构造方法
+     private RxBus() {
+         bus = PublishRelay.create().toSerialized();
+     }
+ 
+     public static RxBus getInstance() {
+         if (instance == null) {
+             synchronized (RxBus.class) {
+                 if (instance == null) {
+                     instance = new RxBus();
+                 }
+             }
+         }
+         return instance;
+     }
+ 
+     public void send(Object event) {
+         bus.accept(event);
+     }
+ 
+     public  <T> Observable<T> toObservable(Class<T> eventType) {
+         return bus.ofType(eventType);
+     }
+ }
+ 使用时，需要你定义一些事件类型，例如上面的UserEvent，该类型只会传递给订阅该类型的观察者。这主要归功于ofType操作符。
+ 
+ 这里仅仅实现了广播事件，基于ReRelay还可以实现其他方式。
+ 

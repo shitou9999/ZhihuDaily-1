@@ -15,6 +15,7 @@ data class LatestNews(
 ) : Serializable
 
 
+//可以在主构造函数中直接声明、初始化成员变量，变量要用 var（可变） 或 val（只可初始化一次） 修饰。
 data class InternetNews(
 		var stories: List<Story>,
 		var description: String,// 把黑客知识科普到你的面前
