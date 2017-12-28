@@ -1,3 +1,115 @@
 
 
 https://github.com/firefecker/ZhihuDaily
+
+
+转换为Kotlin工程
+转换为Kotlin工程最简单的方法Tools -> Kotlin -> Configure Kotin in Project，为了后面的其它配置打基础还是了解下它都帮我们做了什么。
+1). project项目gradle加入编译脚本
+
+buildscript {
+    // 添加了Kotlin版本号
+    ext.kotlin_version = '1.1.4-2'
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.3'
+        // 添加了Kotlin编译插件
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+2). 当前model模块gradle使用Kotlin插件并添加引用
+
+apply plugin: 'com.android.application'
+// 使用Kotlin插件
+apply plugin: 'kotlin-android'
+
+dependencies {
+    //...
+
+    //添加Kotlin 标准库
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    //...
+}
+
+Android 扩展插件 kotlin-android-extensions
+这个相当于DataBinding，同样的目的为了偷懒不用写findViewByIdAndroid 开发必备。修改项目gradle如下，Tools自动转换默认是没有添加的apply plugin: 'kotlin-android-extensions'。
+
+apply plugin: 'com.android.application'
+// 使用Kotlin插件
+apply plugin: 'kotlin-android'
+// 使用Kotlin Android扩展插件
+apply plugin: 'kotlin-android-extensions'
+
+dependencies {
+    //...
+
+    //添加Kotlin 标准库
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    //...
+}
+
+Anko
+如今的Anko已经不仅仅是用代码来代替XML生成布局。除了对View控件的支持外还包括了Toast、Dialog、Log这类常用控件和工具都做了支持；anko-sdk25-coroutines 非常方便的控制线程切换；anko-sqlite 让数据库操作不再困难。总之这个库可以让你的代码变得非常优雅。对于Android开发者来说还是习惯XML中写UI，不过其它的可以用Anko来替换。
+Anko最新信息查看https://github.com/Kotlin/anko
+Anko是一个Kotlin库，使用同第三方库引用一样。可以选择导入全部Anko或部分导入，当前最新版0.10.0
+release查看：https://github.com/Kotlin/anko/releases
+jcenter查看：https://jcenter.bintray.com/org/jetbrains/anko/anko
+
+dependencies {
+    // 导入全部常用Anko, support v4, appcompat v7
+    compile "org.jetbrains.anko:anko:$anko_version"
+}
+根据自己需求选择部分内容
+
+dependencies {
+    // Anko Commons
+    compile "org.jetbrains.anko:anko-commons:$anko_version"
+
+    // Anko Layouts
+    compile "org.jetbrains.anko:anko-sdk25:$anko_version" // sdk15, sdk19, sdk21, sdk23 are also available
+    compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
+
+    // Coroutine listeners for Anko Layouts
+    compile "org.jetbrains.anko:anko-sdk25-coroutines:$anko_version"
+    compile "org.jetbrains.anko:anko-appcompat-v7-couroutines:$anko_version"
+
+    // Anko SQLite
+    compile "org.jetbrains.anko:anko-sqlite:$anko_version"
+}
+Anko也支持Android support 库
+
+dependencies {
+    // Appcompat-v7 (only Anko Commons)
+    compile "org.jetbrains.anko:anko-appcompat-v7-commons:$anko_version"
+
+    // Appcompat-v7 (Anko Layouts)
+    compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
+    compile "org.jetbrains.anko:anko-coroutines:$anko_version"
+
+    // CardView-v7
+    compile "org.jetbrains.anko:anko-cardview-v7:$anko_version"
+
+    // Design
+    compile "org.jetbrains.anko:anko-design:$anko_version"
+    compile "org.jetbrains.anko:anko-design-coroutines:$anko_version"
+
+    // GridLayout-v7
+    compile "org.jetbrains.anko:anko-gridlayout-v7:$anko_version"
+
+    // Percent
+    compile "org.jetbrains.anko:anko-percent:$anko_version"
+
+    // RecyclerView-v7
+    compile "org.jetbrains.anko:anko-recyclerview-v7:$anko_version"
+    compile "org.jetbrains.anko:anko-recyclerview-v7-coroutines:$anko_version"
+
+    // Support-v4 (only Anko Commons)
+    compile "org.jetbrains.anko:anko-support-v4-commons:$anko_version"
+
+    // Support-v4 (Anko Layouts)
+    compile "org.jetbrains.anko:anko-support-v4:$anko_version"
+}
+
